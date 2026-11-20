@@ -1,0 +1,19 @@
+# Notebook environment
+jupyter
+ipykernel
+
+# Data loading and exploration
+numpy
+pandas
+pyarrow
+matplotlib
+seaborn
+
+# Retrieval and knowledge graphs
+scikit-learn
+networkx
+sentence-transformers
+
+# Reinforcement learning
+gymnasium
+torch
