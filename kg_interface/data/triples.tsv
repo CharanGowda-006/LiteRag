@@ -1,0 +1,6 @@
+head_entity_id	relation_id	tail_entity_id
+E0001	R001	E0002
+E0002	R002	E0003
+E0004	R002	E0002
+E0005	R003	E0002
+E0006	R004	E0004

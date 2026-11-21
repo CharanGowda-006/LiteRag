@@ -4,3 +4,8 @@ __pycache__/
 .ipynb_checkpoints/
 .env
 data/
+kg_interface/synth_data/
+
+policy.npz
+
+__pycache__/

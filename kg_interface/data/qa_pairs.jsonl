@@ -1,0 +1,3 @@
+{"qa_id": "Q0001", "question": "What is the capital of Karnataka?", "answer": "Bengaluru", "entities": ["E0002"], "answer_entity_ids": ["E0001"], "supporting_chunk_ids": ["C0001"], "split": "train"}
+{"qa_id": "Q0002", "question": "Which palace is in Mysuru?", "answer": "Mysore Palace", "entities": ["E0004"], "answer_entity_ids": ["E0006"], "supporting_chunk_ids": ["C0002"], "split": "train"}
+{"qa_id": "Q0003", "question": "What is the official language of Karnataka?", "answer": "Kannada", "entities": ["E0002"], "answer_entity_ids": ["E0005"], "supporting_chunk_ids": ["C0003"], "split": "dev"}

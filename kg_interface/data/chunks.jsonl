@@ -1,0 +1,3 @@
+{"chunk_id": "C0001", "document_id": "D001", "text": "Bengaluru is the capital of Karnataka and a major technology hub of India.", "entity_ids": ["E0001", "E0002", "E0003"]}
+{"chunk_id": "C0002", "document_id": "D001", "text": "Mysuru is a city in Karnataka, famous for the Mysore Palace.", "entity_ids": ["E0004", "E0002", "E0006"]}
+{"chunk_id": "C0003", "document_id": "D002", "text": "Kannada is the official language of Karnataka.", "entity_ids": ["E0005", "E0002"]}
