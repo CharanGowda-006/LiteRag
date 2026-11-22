@@ -125,6 +125,9 @@ During training, the reward reflects increases in answer-entity and supporting
 chunk coverage, minus the per-expansion step cost. Gold labels are used for
 training rewards/evaluation, not as inference-time policy features.
 
+For the state features, action probabilities, reward derivation, REINFORCE
+updates, and parameter-search formulas, see [RL_FORMULAS.md](RL_FORMULAS.md).
+
 Train and tune with the command-line interface:
 
 ```bash
