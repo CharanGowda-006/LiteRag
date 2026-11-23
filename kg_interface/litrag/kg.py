@@ -58,7 +58,7 @@ def _jsonl(path):
 class KnowledgeGraph:
     def __init__(self, data_dir, embedder=None, use_saved_embeddings=True):
         j = lambda n: os.path.join(data_dir, n)
-        ents, rels, trips = _tsv(j("entities.tsv")), _tsv(j("relations.tsv")), _tsv(j("triples.tsv"))
+        ents, rels = _tsv(j("entities.tsv")), _tsv(j("relations.tsv"))
         self.chunks, self.qa = _jsonl(j("chunks.jsonl")), _jsonl(j("qa_pairs.jsonl"))
 
         self.ent_ids = [e["entity_id"] for e in ents]
@@ -67,14 +67,28 @@ class KnowledgeGraph:
         self.ent_desc = [e["description"] for e in ents]
         self.rel_names = {r["relation_id"]: r["name"] for r in rels}
         self._norm_names = [" " + norm_text(n) + " " for n in self.ent_names]
+        self._norm_name_index = {}
+        for i, normalized_name in enumerate(self._norm_names):
+            key = normalized_name.strip()
+            if not key:
+                continue
+            previous = self._norm_name_index.get(key)
+            if previous is None:
+                self._norm_name_index[key] = i
+            elif isinstance(previous, list):
+                previous.append(i)
+            else:
+                self._norm_name_index[key] = [previous, i]
 
         # undirected neighbour lists (inverse edges added so EXPAND can go "backwards")
         nb = [set() for _ in ents]
-        self.edges = defaultdict(list)  # node -> [(neighbour, relation_id, "out"/"in")]
-        for t in trips:
-            h, r, tl = self.ent_idx[t["head_entity_id"]], t["relation_id"], self.ent_idx[t["tail_entity_id"]]
-            nb[h].add(tl); nb[tl].add(h)
-            self.edges[h].append((tl, r, "out")); self.edges[tl].append((h, r, "in"))
+        with open(j("triples.tsv"), encoding="utf-8", newline="") as handle:
+            for t in csv.DictReader(handle, delimiter="\t"):
+                h = self.ent_idx[t["head_entity_id"]]
+                tl = self.ent_idx[t["tail_entity_id"]]
+                r = t["relation_id"]
+                nb[h].add(tl)
+                nb[tl].add(h)
         self.nbrs = [sorted(s) for s in nb]
 
         self.chunk_ids = [c["chunk_id"] for c in self.chunks]
@@ -100,8 +114,19 @@ class KnowledgeGraph:
 
     def link_entities(self, question, k=3):
         """Simple entity linking: names found in the question (longest first), else best embedding match."""
-        q = " " + norm_text(question) + " "
-        hits = sorted(((len(n), i) for i, n in enumerate(self._norm_names) if n.strip() and n in q), reverse=True)
+        words = norm_text(question).split()
+        hit_ids = []
+        for start in range(len(words)):
+            for end in range(start + 1, len(words) + 1):
+                match = self._norm_name_index.get(" ".join(words[start:end]))
+                if isinstance(match, list):
+                    hit_ids.extend(match)
+                elif match is not None:
+                    hit_ids.append(match)
+        hits = sorted(
+            ((len(self._norm_names[i]), i) for i in set(hit_ids)),
+            reverse=True,
+        )
         if hits:
             return [i for _, i in hits[:k]]
         return [int(np.argmax(self.ent_emb @ self.encode_query(question)))]

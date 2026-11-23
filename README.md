@@ -12,12 +12,13 @@ language-model answer-generation or answer-faithfulness stage yet.
 
 | Path | Purpose |
 |---|---|
-| `../data/` | HotpotQA train and validation parquet shards used by the converter |
-| `../notebooks/01_data_exploration.ipynb` | Explore the source data and export it for LiteRag |
-| `../notebooks/02_knowledge_graph.ipynb` | Load and inspect the LiteRag graph |
-| `../notebooks/03_baseline_retrieval.ipynb` | Run dense-retrieval baseline |
-| `../notebooks/04_rl_agent.ipynb` | Train the RL policy and search expansion parameters |
-| `../notebooks/05_evaluation.ipynb` | Compare baselines and the learned policy |
+| `data/` | HotpotQA train and validation parquet shards used by the converter |
+| `notebooks/01_data_exploration.ipynb` | Explore the source data and export it for LiteRag |
+| `notebooks/02_knowledge_graph.ipynb` | Load and inspect the LiteRag graph |
+| `notebooks/03_baseline_retrieval.ipynb` | Run dense-retrieval baseline |
+| `notebooks/04_rl_agent.ipynb` | Train the RL policy and search expansion parameters |
+| `notebooks/05_evaluation.ipynb` | Compare baselines and the learned policy |
+| `notebooks/06_full_hotpotqa_colab.ipynb` | Convert the full dataset and evaluate the full validation split in Colab |
 | `build_hotpot_kg.py` | Convert HotpotQA parquet shards to the interface files |
 | `data/` | Generated graph, chunks, and QA data consumed by LiteRag |
 | `litrag/kg.py` | Load graph data, embeddings, and link question entities |
@@ -46,6 +47,22 @@ The converter maps HotpotQA validation rows to the interface split name `dev`.
 It does not create a separate test split. Its default sample sizes are 20,000
 train rows and all 7,405 validation rows. Pass a sample size of `0` to use the
 entire corresponding split.
+
+## Full HotpotQA run in Google Colab
+
+Use [06_full_hotpotqa_colab.ipynb](notebooks/06_full_hotpotqa_colab.ipynb) to
+convert all train and validation shards, train a policy, and evaluate all
+validation questions. It expects the three parquet shards in
+`MyDrive/HotpotQA/data/` and writes the generated data, policy, and metrics to
+`MyDrive/LiteRag_Full_Run/`.
+
+The current hash-embedding implementation holds dense 2,048-dimensional
+matrices in memory. The full corpus needs about 14.4 GiB for chunk embeddings
+and at least 3.9 GiB for title-entity embeddings alone (aliases may add more),
+so the notebook requires a Colab High-RAM runtime (at least 40 GiB total; 50 GiB
+recommended). The default notebook trains on 1,000 train questions for 2 epochs to limit runtime, but
+evaluates on the complete validation split. Set `TRAIN_LIMIT = None` in the
+notebook to train on all train questions; this can take many hours.
 
 ## Install and prepare data
 
